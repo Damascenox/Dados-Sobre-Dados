@@ -20,10 +20,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="Notebook_files/libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="Notebook_files/libs/clipboard/clipboard.min.js"></script>
 <script src="Notebook_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="Notebook_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="Notebook_files/libs/quarto-html/popper.min.js"></script>
@@ -34,6 +69,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="Notebook_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Notebook_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Notebook_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -84,6 +122,404 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="objetivo">Objetivo</h2>
 <p>Não se trata de substituir as valiosas experiências pessoais que são trocadas nos fóruns, mas sim de complementá-las. A minha intenção é apenas organizar os dados de uma forma que possa trazer uma nova perspectiva e, quem sabe, ajudar a comunidade da qual eu estou sendo inserido a encontrar algumas respostas um pouco mais consolidadas. Seria a minha forma de contribuir.</p>
 <p>Como o meu principal objetivo com este desafio é o aprendizado, encaro o projeto também como uma oportunidade para experimentar. Por isso, pretendo utilizar um conjunto variado de ferramentas para a manipulação, análise e visualização dos dados, aplicando tanto as que já conheço quanto outras que desejo explorar. No fim das contas, todo o processo será uma jornada de desenvolvimento pessoal, e ficarei feliz em compartilhar o que descobrir pelo caminho.</p>
+<div id="75d847ad" class="cell" data-tags="[&quot;Tratamento de Dados Inicial&quot;]">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. CARREGAMENTO DOS DADOS</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Instalação e Inicialização dos Pacotes</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>library(tidyverse) <span class="co">#Para manipulação de dados</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>library(scales) <span class="co">#Para formatação de números</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>library(janitor) <span class="co">#Para limpeza de nomes de colunas</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>library(reactable) <span class="co">#Para tabelas mais bonitas e interativas.</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>library(reactablefmtr)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#Bancos de Dados</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>br2019 <span class="op">&lt;-</span> read.csv(<span class="st">"C:/Users/DamaLaptoper/Desktop/Dmas_code/Dados_sobre_Dados/Bancos_de_Dados/df2019.csv"</span>) <span class="op">%&gt;%</span> janitor::clean_names()</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>br2021 <span class="op">&lt;-</span> read.csv(<span class="st">"C:/Users/DamaLaptoper/Desktop/Dmas_code/Dados_sobre_Dados/Bancos_de_Dados/df2021.csv"</span>) <span class="op">%&gt;%</span>  janitor::clean_names()</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>br2022 <span class="op">&lt;-</span> read.csv(<span class="st">"C:/Users/DamaLaptoper/Desktop/Dmas_code/Dados_sobre_Dados/Bancos_de_Dados/df2022.csv"</span>) <span class="op">%&gt;%</span>  janitor::clean_names()</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>br2023 <span class="op">&lt;-</span> read.csv(<span class="st">"C:/Users/DamaLaptoper/Desktop/Dmas_code/Dados_sobre_Dados/Bancos_de_Dados/df2023.csv"</span>) <span class="op">%&gt;%</span>  janitor::clean_names()</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>br2024 <span class="op">&lt;-</span> read.csv(<span class="st">"C:/Users/DamaLaptoper/Desktop/Dmas_code/Dados_sobre_Dados/Bancos_de_Dados/df2024.csv"</span>) <span class="op">%&gt;%</span>  janitor::clean_names()</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#Nesse ponto é possivel juntar os bancos de dados, mas necessitaria de um entendimento mais profundo dos dados, </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#renomear manualmente utilizando LLMs, mas ainda não tenho total controle sobre alucinações, </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#e ou confundimento então preferi deixar separado, tentarei deixar o codigo o mais legivel possível mesmo assim.</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># funcao auxiliar para exibir plot</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>fig <span class="op">&lt;-</span> function(width, heigth){</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># borrowed from https://www.kaggle.com/getting-started/105201</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    options(<span class="bu">repr</span>.plot.width <span class="op">=</span> width, <span class="bu">repr</span>.plot.height <span class="op">=</span> heigth)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="perspectivas-salariais-em-dados-o-caminho-da-estatística" class="level1">
+<h1>🎯 Perspectivas Salariais em Dados: O Caminho da Estatística</h1>
+<section id="a-pergunta-original" class="level2">
+<h2 class="anchored" data-anchor-id="a-pergunta-original">A Pergunta Original</h2>
+<pre><code>[Dúvidas sobre salários](https://www.reddit.com/r/datasciencebr/comments/1i5utod/d%C3%BAvidas_sobre_sal%C3%A1rios/)</code></pre>
+<blockquote class="blockquote">
+<p><em>“Olá a todos do Sub, estou pesquisando e buscando informações sobre diferentes cursos de graduação e achei muito interessante a graduação em estatística na ufmg e me interessei também pela possibilidade de trabalhar na área de dados. Como estou fazendo uma pesquisa geral a respeito de diferentes cursos, eu gostaria de saber mais sobre questões de salários. Até onde da pra chegar? É possível conseguir uma boa remuneração com uma boa formação, bons estágios, etc?”</em></p>
+</blockquote>
+<p>Vamos quebrar essa questão em pedaços menores e mais tangíveis.</p>
+<hr>
+</section>
+<section id="dividindo-para-conquistar" class="level2">
+<h2 class="anchored" data-anchor-id="dividindo-para-conquistar">🔍 Dividindo para Conquistar</h2>
+<section id="trajetória-inicial-o-primeiro-emprego" class="level3">
+<h3 class="anchored" data-anchor-id="trajetória-inicial-o-primeiro-emprego"><strong>1. Trajetória Inicial: O Primeiro Emprego</strong></h3>
+<ul>
+<li><strong>Pergunta específica</strong>: Qual é a faixa salarial realista para quem está começando?</li>
+<li><strong>O que queremos descobrir</strong>: Salários de entrada por nível de experiência (estágio, júnior, trainee)</li>
+<li><strong>Insight esperado</strong>: Expectativas realistas para os primeiros anos</li>
+</ul>
+</section>
+<section id="evolução-na-carreira-o-crescimento-possível" class="level3">
+<h3 class="anchored" data-anchor-id="evolução-na-carreira-o-crescimento-possível"><strong>2. Evolução na Carreira: O Crescimento Possível</strong></h3>
+<ul>
+<li><strong>Pergunta específica</strong>: Como os salários evoluem com o tempo e experiência?</li>
+<li><strong>O que queremos descobrir</strong>: Progressão salarial ao longo de 3, 5, 10 anos</li>
+<li><strong>Insight esperado</strong>: Mapear o potencial de crescimento a médio e longo prazo</li>
+</ul>
+</section>
+<section id="fatores-multiplicadores-o-que-faz-a-diferença" class="level3">
+<h3 class="anchored" data-anchor-id="fatores-multiplicadores-o-que-faz-a-diferença"><strong>3. Fatores Multiplicadores: O Que Faz a Diferença</strong></h3>
+<ul>
+<li><strong>Pergunta específica</strong>: Quais elementos impactam mais no salário?
+<ul>
+<li>Localização geográfica</li>
+<li>Tipo de empresa (startup, consultoria, banco, tech)</li>
+<li>Especializações técnicas</li>
+<li>Certificações e cursos complementares</li>
+</ul></li>
+<li><strong>O que queremos descobrir</strong>: Onde investir energia para maximizar retorno financeiro</li>
+<li><strong>Insight esperado</strong>: Estratégias práticas para otimizar remuneração</li>
+</ul>
+</section>
+<section id="teto-de-vidro-os-limites-reais" class="level3">
+<h3 class="anchored" data-anchor-id="teto-de-vidro-os-limites-reais"><strong>4. Teto de Vidro: Os Limites Reais</strong></h3>
+<ul>
+<li><strong>Pergunta específica</strong>: Qual é o “teto” salarial realista na área?</li>
+<li><strong>O que queremos descobrir</strong>: Faixas salariais dos percentis mais altos (top 10%, top 5%)</li>
+<li><strong>Insight esperado</strong>: Entender o potencial máximo e o que é necessário para chegar lá</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="estratégia-de-análise" class="level2">
+<h2 class="anchored" data-anchor-id="estratégia-de-análise">📊 Estratégia de Análise</h2>
+<section id="abordagem-quantitativa" class="level3">
+<h3 class="anchored" data-anchor-id="abordagem-quantitativa"><strong>Abordagem Quantitativa</strong></h3>
+<ul>
+<li>Análise de distribuição salarial por experiência</li>
+<li>Comparação entre formações acadêmicas (Quero detalhar mais sobre isso em uma pergunta posterior)</li>
+<li>Correlação entre fatores e remuneração</li>
+</ul>
+</section>
+<section id="abordagem-qualitativa" class="level3">
+<h3 class="anchored" data-anchor-id="abordagem-qualitativa"><strong>Abordagem Qualitativa</strong></h3>
+<ul>
+<li>Identificação de padrões em trajetórias de sucesso</li>
+<li>Análise de comentários sobre satisfação vs.&nbsp;remuneração</li>
+<li>Mapeamento de “pontos de virada” na carreira</li>
+</ul>
+<hr>
+<p><strong>A meta não é apenas responder “quanto se ganha”, mas sim “como construir uma carreira financeiramente recompensadora na área de dados”.</strong></p>
+<div id="87079eeb" class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fig(<span class="dv">16</span>, <span class="dv">6</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. CONFIGURAÇÃO DAS FAIXAS SALARIAIS</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Faixas completas (2021-2024)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>faixas_completas <span class="op">&lt;-</span> c(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Menos de R$ 1.000/mês"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 1.001/mês a R$ 2.000/mês"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 2.001/mês a R$ 3.000/mês"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 3.001/mês a R$ 4.000/mês"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 4.001/mês a R$ 6.000/mês"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 6.001/mês a R$ 8.000/mês"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 8.001/mês a R$ 12.000/mês"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 12.001/mês a R$ 16.000/mês"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 16.001/mês a R$ 20.000/mês"</span>,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 20.001/mês a R$ 25.000/mês"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 25.001/mês a R$ 30.000/mês"</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 30.001/mês a R$ 40.000/mês"</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Acima de R$ 40.001/mês"</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#OBS: No banco de 2019, as faixas salariais só vão até "Acima de R$ 25.001/mês"</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Faixas limitadas 2019 (máximo até 25.001)</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>faixas_2019 <span class="op">&lt;-</span> c(</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Menos de R$ 1.000/mês"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 1.001/mês a R$ 2.000/mês"</span>,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 2.001/mês a R$ 3.000/mês"</span>,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 3.001/mês a R$ 4.000/mês"</span>,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 4.001/mês a R$ 6.000/mês"</span>,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 6.001/mês a R$ 8.000/mês"</span>,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 8.001/mês a R$ 12.000/mês"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 12.001/mês a R$ 16.000/mês"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 16.001/mês a R$ 20.000/mês"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="st">"de R$ 20.001/mês a R$ 25.000/mês"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Acima de R$ 25.001/mês"</span>  <span class="co"># Limitação do ano 2019</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. FUNÇÕES DE FORMATAÇÃO</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>formatar_dados_salario <span class="op">&lt;-</span> function(dados, coluna_salario, faixas_ordem) {</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">%&gt;%</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    select(all_of(coluna_salario)) <span class="op">%&gt;%</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    na.omit() <span class="op">%&gt;%</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    rename(faixa_salarial <span class="op">=</span> <span class="dv">1</span>) <span class="op">%&gt;%</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    mutate(faixa_salarial <span class="op">=</span> factor(faixa_salarial, levels <span class="op">=</span> faixas_ordem)) <span class="op">%&gt;%</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    count(faixa_salarial) <span class="op">%&gt;%</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    arrange(faixa_salarial) <span class="op">%&gt;%</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    rename(`Faixa Salarial` <span class="op">=</span> faixa_salarial, Quantidade <span class="op">=</span> n) <span class="op">%&gt;%</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    mutate(</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>      Relativo <span class="op">=</span> Quantidade <span class="op">/</span> <span class="bu">sum</span>(Quantidade),</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>      Acumulado <span class="op">=</span> cumsum(Relativo),</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Formatação em percentual</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>      Relativo_fmt <span class="op">=</span> percent(Relativo, accuracy <span class="op">=</span> <span class="fl">0.1</span>),</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>      Acumulado_fmt <span class="op">=</span> percent(Acumulado, accuracy <span class="op">=</span> <span class="fl">0.1</span>)</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. CONFIGURAÇÃO DO TEMA</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="co">#' Configura o tema visual para tabelas interativas reactable.</span></span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="co">#'</span></span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="co">#' Esta função define estilos personalizados para títulos e subtítulos,</span></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="co">#' retornando um objeto de tema que pode ser utilizado em tabelas interativas.</span></span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a><span class="co">#' @return Um objeto de tema reactable com estilos personalizados.</span></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>configurar_tema <span class="op">&lt;-</span> function() {</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>  tema <span class="op">&lt;-</span> espn()</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>  tema$titleStyle <span class="op">&lt;-</span> <span class="bu">list</span>(</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>    fontFamily <span class="op">=</span> <span class="st">"'Bebas Neue', sans-serif"</span>, </span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>    fontSize <span class="op">=</span> <span class="st">"2rem"</span>, </span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>    fontWeight <span class="op">=</span> <span class="st">"700"</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>  tema$subtitleStyle <span class="op">&lt;-</span> <span class="bu">list</span>(</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>    fontFamily <span class="op">=</span> <span class="st">"'Bebas Neue', sans-serif"</span>, </span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>    fontSize <span class="op">=</span> <span class="st">"1.25rem"</span>, </span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    fontWeight <span class="op">=</span> <span class="st">"400"</span>, </span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    color <span class="op">=</span> <span class="st">"#666"</span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span>(tema)</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. FUNÇÃO PARA CRIAR TABELA INTERATIVA</span></span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>criar_tabela_salarial <span class="op">&lt;-</span> function(dados_formatados, titulo, ano) {</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>  meu_tema <span class="op">&lt;-</span> configurar_tema()</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">%&gt;%</span></span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>    mutate(Icones_Representacao <span class="op">=</span> Quantidade) <span class="op">%&gt;%</span> <span class="co"># Adiciona coluna de ícones relativos a quantidade.</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>    reactable(</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>      striped <span class="op">=</span> TRUE,</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>      pagination <span class="op">=</span> FALSE,</span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>      theme <span class="op">=</span> meu_tema,</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>      showSortIcon <span class="op">=</span> FALSE,</span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>      searchable <span class="op">=</span> TRUE,</span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>      language <span class="op">=</span> reactableLang(</span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>        searchPlaceholder <span class="op">=</span> <span class="st">"BUSCAR POR FAIXA..."</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>      columns <span class="op">=</span> <span class="bu">list</span>(</span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Faixa Salarial"</span> <span class="op">=</span> colDef(</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>          name <span class="op">=</span> <span class="st">"Faixa Salarial"</span>, </span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>          maxWidth <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>        Icones_Representacao <span class="op">=</span> colDef(</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>          name <span class="op">=</span> <span class="st">""</span>,</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>          align <span class="op">=</span> <span class="st">"center"</span>,</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>          maxWidth <span class="op">=</span> <span class="dv">150</span>,</span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>          cell <span class="op">=</span> icon_assign(</span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> ., </span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>            icon <span class="op">=</span> <span class="st">"user"</span>, </span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>            fill_color <span class="op">=</span> <span class="st">"#555555"</span>,</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>            buckets <span class="op">=</span> <span class="dv">5</span>,</span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>            show_values <span class="op">=</span> <span class="st">'none'</span> </span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>        Quantidade <span class="op">=</span> colDef(</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>          name <span class="op">=</span> <span class="st">"Quantidade"</span>,</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>          maxWidth <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>          style <span class="op">=</span> color_scales(</span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> .,</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>            colors <span class="op">=</span> c(<span class="st">"#edf8e9"</span>, <span class="st">"#74c476"</span>, <span class="st">"#005a32"</span>)</span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>        Relativo_fmt <span class="op">=</span> colDef(</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>          name <span class="op">=</span> <span class="st">"Percentual"</span>,</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>          cell <span class="op">=</span> data_bars(</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> .,</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>            fill_color <span class="op">=</span> <span class="st">"#3fc1c9"</span>,</span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>            background <span class="op">=</span> <span class="st">"#f2f2f2"</span>,</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>            text_position <span class="op">=</span> <span class="st">"outside-end"</span></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>        Acumulado_fmt <span class="op">=</span> colDef(</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>          name <span class="op">=</span> <span class="st">"Acumulado"</span>,</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>          maxWidth <span class="op">=</span> <span class="dv">120</span></span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Ocultar colunas auxiliares</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>        Relativo <span class="op">=</span> colDef(show <span class="op">=</span> FALSE),</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>        Acumulado <span class="op">=</span> colDef(show <span class="op">=</span> FALSE)</span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">%&gt;%</span> </span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>    add_title(paste(<span class="st">"Distribuição Salarial"</span>, titulo)) <span class="op">%&gt;%</span> </span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>    add_source(paste(<span class="st">"State of Data Brazil"</span>, ano))</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a><span class="co"># ANÁLISE PARA 2024 </span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a><span class="co"># Processar dados de 2024</span></span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>tabela_2024 <span class="op">&lt;-</span> formatar_dados_salario(</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">=</span> br2024,</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>  coluna_salario <span class="op">=</span> <span class="st">"x2_h_faixa_salarial"</span>,</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>  faixas_ordem <span class="op">=</span> faixas_completas</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar tabela interativa</span></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2024 <span class="op">&lt;-</span> criar_tabela_salarial(</span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">=</span> tabela_2024,</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>  titulo <span class="op">=</span> <span class="st">"2024"</span>,</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>  ano <span class="op">=</span> <span class="st">"2024-2025"</span></span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir tabela</span></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2024</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a><span class="co"># ANÁLISE PARA 2023</span></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a><span class="co"># Processar dados de 2023</span></span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>tabela_2023 <span class="op">&lt;-</span> formatar_dados_salario(</span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">=</span> br2023,</span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a>  coluna_salario <span class="op">=</span> <span class="st">"x_p2_h_faixa_salarial"</span>,</span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a>  faixas_ordem <span class="op">=</span> faixas_completas</span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar tabela interativa</span></span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2024 <span class="op">&lt;-</span> criar_tabela_salarial(</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">=</span> tabela_2023,</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>  titulo <span class="op">=</span> <span class="st">"2023"</span>,</span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a>  ano <span class="op">=</span> <span class="st">"2023-2024"</span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir tabela</span></span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2023</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a><span class="co"># ANÁLISE PARA 2022</span></span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="co"># Processar dados de 2022</span></span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>tabela_2022 <span class="op">&lt;-</span> formatar_dados_salario(</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">=</span> br2022,</span>
+<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>  coluna_salario <span class="op">=</span> <span class="st">"x_p2_h_faixa_salarial"</span>,</span>
+<span id="cb3-211"><a href="#cb3-211" aria-hidden="true" tabindex="-1"></a>  faixas_ordem <span class="op">=</span> faixas_completas</span>
+<span id="cb3-212"><a href="#cb3-212" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-213"><a href="#cb3-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-214"><a href="#cb3-214" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar tabela interativa</span></span>
+<span id="cb3-215"><a href="#cb3-215" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2022 <span class="op">&lt;-</span> criar_tabela_salarial(</span>
+<span id="cb3-216"><a href="#cb3-216" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">=</span> tabela_2022,</span>
+<span id="cb3-217"><a href="#cb3-217" aria-hidden="true" tabindex="-1"></a>  titulo <span class="op">=</span> <span class="st">"2023"</span>,</span>
+<span id="cb3-218"><a href="#cb3-218" aria-hidden="true" tabindex="-1"></a>  ano <span class="op">=</span> <span class="st">"2022-2023"</span></span>
+<span id="cb3-219"><a href="#cb3-219" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-220"><a href="#cb3-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-221"><a href="#cb3-221" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir tabela</span></span>
+<span id="cb3-222"><a href="#cb3-222" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2022</span>
+<span id="cb3-223"><a href="#cb3-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-224"><a href="#cb3-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-225"><a href="#cb3-225" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-226"><a href="#cb3-226" aria-hidden="true" tabindex="-1"></a><span class="co"># ANÁLISE PARA 2021</span></span>
+<span id="cb3-227"><a href="#cb3-227" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-228"><a href="#cb3-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-229"><a href="#cb3-229" aria-hidden="true" tabindex="-1"></a><span class="co"># Processar dados de 2021</span></span>
+<span id="cb3-230"><a href="#cb3-230" aria-hidden="true" tabindex="-1"></a>tabela_2021 <span class="op">&lt;-</span> formatar_dados_salario(</span>
+<span id="cb3-231"><a href="#cb3-231" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">=</span> br2021,</span>
+<span id="cb3-232"><a href="#cb3-232" aria-hidden="true" tabindex="-1"></a>  coluna_salario <span class="op">=</span> <span class="st">"x_p2_h_faixa_salarial"</span>,</span>
+<span id="cb3-233"><a href="#cb3-233" aria-hidden="true" tabindex="-1"></a>  faixas_ordem <span class="op">=</span> faixas_completas</span>
+<span id="cb3-234"><a href="#cb3-234" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-235"><a href="#cb3-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-236"><a href="#cb3-236" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar tabela interativa</span></span>
+<span id="cb3-237"><a href="#cb3-237" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2021 <span class="op">&lt;-</span> criar_tabela_salarial(</span>
+<span id="cb3-238"><a href="#cb3-238" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">=</span> tabela_2021,</span>
+<span id="cb3-239"><a href="#cb3-239" aria-hidden="true" tabindex="-1"></a>  titulo <span class="op">=</span> <span class="st">"2022"</span>,</span>
+<span id="cb3-240"><a href="#cb3-240" aria-hidden="true" tabindex="-1"></a>  ano <span class="op">=</span> <span class="st">"2021-2022"</span></span>
+<span id="cb3-241"><a href="#cb3-241" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-242"><a href="#cb3-242" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-243"><a href="#cb3-243" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir tabela</span></span>
+<span id="cb3-244"><a href="#cb3-244" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2021</span>
+<span id="cb3-245"><a href="#cb3-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-246"><a href="#cb3-246" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-247"><a href="#cb3-247" aria-hidden="true" tabindex="-1"></a><span class="co"># EXEMPLO PARA ANÁLISE HISTÓRICA (2019)</span></span>
+<span id="cb3-248"><a href="#cb3-248" aria-hidden="true" tabindex="-1"></a><span class="co"># -----------------------------------------------------------------------------</span></span>
+<span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a><span class="co"># Para comparar com 2019 (limitação nas faixas)</span></span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>tabela_2019 <span class="op">&lt;-</span> formatar_dados_salario(</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a>  dados <span class="op">=</span> br2019,</span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>  coluna_salario <span class="op">=</span> <span class="st">"x_p16_salary_range"</span>, <span class="co"># Ajustar nome da coluna</span></span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>  faixas_ordem <span class="op">=</span> faixas_2019</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar tabela para 2019</span></span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2019 <span class="op">&lt;-</span> criar_tabela_salarial(</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>  dados_formatados <span class="op">=</span> tabela_2019,</span>
+<span id="cb3-260"><a href="#cb3-260" aria-hidden="true" tabindex="-1"></a>  titulo <span class="op">=</span> <span class="st">"2019 (Dados Limitados)"</span>,</span>
+<span id="cb3-261"><a href="#cb3-261" aria-hidden="true" tabindex="-1"></a>  ano <span class="op">=</span> <span class="st">"2019"</span></span>
+<span id="cb3-262"><a href="#cb3-262" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-263"><a href="#cb3-263" aria-hidden="true" tabindex="-1"></a><span class="co"># Exibir tabela</span></span>
+<span id="cb3-264"><a href="#cb3-264" aria-hidden="true" tabindex="-1"></a>tabela_interativa_2019</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+
+
+
+<meta charset="utf-8">
+<style>body{background-color:white;}</style>
+<script src="lib/core-js-2.5.3/shim.min.js"></script>
+<script src="lib/react-18.2.0/react.min.js"></script>
+<script src="lib/react-18.2.0/react-dom.min.js"></script>
+<script src="lib/reactwidget-2.0.0/react-tools.js"></script>
+<link href="lib/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="lib/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="lib/reactable-0.4.4/reactable.css" rel="stylesheet">
+<script src="lib/reactable-binding-0.4.4/reactable.js"></script>
+<link href="lib/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="lib/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
+
+
+
+<div id="htmlwidget_container">
+  <h1 style="color:#000;background:#FFFFFF;text-align:left;font-size:32px;font-style:normal;font-weight:bold;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Distribuição Salarial 2024</h1>
+  <div class="reactable html-widget html-fill-item" id="htmlwidget-614d99b79c3483e305a1" style="width:auto;height:auto;"></div>
+  <p style="color:#000;background:#FFFFFF;text-align:left;font-size:16px;font-style:normal;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">State of Data Brazil 2024-2025</p>
+</div>
+<script type="application/json" data-for="htmlwidget-614d99b79c3483e305a1">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Faixa Salarial":["Menos de R$ 1.000/mês","de R$ 1.001/mês a R$ 2.000/mês","de R$ 2.001/mês a R$ 3.000/mês","de R$ 3.001/mês a R$ 4.000/mês","de R$ 4.001/mês a R$ 6.000/mês","de R$ 6.001/mês a R$ 8.000/mês","de R$ 8.001/mês a R$ 12.000/mês","de R$ 12.001/mês a R$ 16.000/mês","de R$ 16.001/mês a R$ 20.000/mês","de R$ 20.001/mês a R$ 25.000/mês","de R$ 25.001/mês a R$ 30.000/mês","de R$ 30.001/mês a R$ 40.000/mês","Acima de R$ 40.001/mês",null],"Quantidade":[33,155,237,270,593,656,1080,716,456,246,159,158,104,354],"Relativo":[0.00632547441058079,0.0297105616254552,0.0454284071305348,0.0517538815411156,0.113666858347709,0.125742764040636,0.207015526164462,0.137243626605329,0.0874065554916619,0.0471535365152386,0.0304772857964347,0.0302856047536899,0.0199348284454667,0.0678550891316849],"Acumulado":[0.00632547441058079,0.036036036036036,0.0814644431665708,0.133218324707686,0.246885183055396,0.372627947096032,0.579643473260495,0.716887099865823,0.804293655357485,0.851447191872724,0.881924477669158,0.912210082422848,0.932144910868315,1],"Relativo_fmt":["0.6%","3.0%","4.5%","5.2%","11.4%","12.6%","20.7%","13.7%","8.7%","4.7%","3.0%","3.0%","2.0%","6.8%"],"Acumulado_fmt":["0.6%","3.6%","8.1%","13.3%","24.7%","37.3%","58.0%","71.7%","80.4%","85.1%","88.2%","91.2%","93.2%","100.0%"],"Icones_Representacao":[33,155,237,270,593,656,1080,716,456,246,159,158,104,354]},"columns":[{"id":"Faixa Salarial","name":"Faixa Salarial","type":"factor","maxWidth":200},{"id":"Quantidade","name":"Quantidade","type":"numeric","maxWidth":100,"style":[{"background":"#EDF8E9FF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#D0EBCEFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#BDE3BCFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#B6E0B4FF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#6BBC71FF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#5DAF69FF","color":"white","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#005A32FF","color":"white","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#50A361FF","color":"white","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#8BCD8CFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#BBE2BAFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#CFEBCDFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#D0EBCDFF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#DCF0D9FF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"},{"background":"#A2D8A2FF","color":"black","fontSize":null,"fontWeight":"normal","transition":"background 1s ease"}]},{"id":"Relativo","name":"Relativo","type":"numeric","show":false},{"id":"Acumulado","name":"Acumulado","type":"numeric","show":false},{"id":"Relativo_fmt","name":"Percentual","type":"character","cell":["0.6%","3.0%","4.5%","5.2%","11.4%","12.6%","20.7%","13.7%","8.7%","4.7%","3.0%","3.0%","2.0%","6.8%"]},{"id":"Acumulado_fmt","name":"Acumulado","type":"character","maxWidth":120},{"id":"Icones_Representacao","name":"","type":"numeric","cell":[{"name":"div","attribs":{"title":"1 out of 5","aria-label":"1 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"1 out of 5","aria-label":"1 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"2 out of 5","aria-label":"2 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"3 out of 5","aria-label":"3 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"4 out of 5","aria-label":"4 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"4 out of 5","aria-label":"4 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"5 out of 5","aria-label":"5 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"5 out of 5","aria-label":"5 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"4 out of 5","aria-label":"4 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"3 out of 5","aria-label":"3 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"2 out of 5","aria-label":"2 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"2 out of 5","aria-label":"2 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"1 out of 5","aria-label":"1 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]},{"name":"div","attribs":{"title":"3 out of 5","aria-label":"3 out of 5","role":"img","align":"left"},"children":[{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#555555FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]},{"name":"i","attribs":{"role":"presentation","aria-label":"user icon","style":{"font-size":"16px","color":"#D3D3D3FF","transition":"1s ease"},"aria-hidden":"true","className":"far fa-user"},"children":[]}]}],"maxWidth":150,"align":"center"}],"searchable":true,"pagination":false,"striped":true,"showSortIcon":false,"theme":{"color":"#6C6D6F","backgroundColor":"#ffffff","borderColor":"#ededed","borderWidth":"1px","stripedColor":"#fafafa","highlightColor":"#fafafa","cellPadding":7,"tableStyle":{"fontSize":12},"headerStyle":{"borderTop":"1px solid #e1e2e4","borderBottom":"1px solid #e1e2e4","padding":"4px","background":"#ffffff","borderColor":"#ffffff","color":"#48494a","textTransform":"uppercase","&:hover":{"color":"#004D9A"},"fontSize":11},"groupHeaderStyle":{"borderTop":"1px solid #e1e2e4","borderLeft":"1px solid #e1e2e4","borderRight":"1px solid #e1e2e4","backgroundColor":"#ffffff","textTransform":"uppercase","fontSize":"11px","color":"#6C6D6F","fontSize.1":11},"rowSelectedStyle":{"backgroundColor":"#48494a"},"inputStyle":{"backgroundColor":"#ffffff","color":"#6C6D6F"},"searchInputStyle":{"color":"#6C6D6F","fontSize":"13px"},"selectStyle":{"color":"#48494a"},"paginationStyle":{"color":"#48494a","fontSize":"13px"},"pageButtonStyle":{"color":"#48494a","fontSize":"13px"},"titleStyle":{"fontFamily":"'Bebas Neue', sans-serif","fontSize":"2rem","fontWeight":"700"},"subtitleStyle":{"fontFamily":"'Bebas Neue', sans-serif","fontSize":"1.25rem","fontWeight":"400","color":"#666"}},"language":{"searchPlaceholder":"BUSCAR POR FAIXA..."},"dataKey":"7d23dac1adc02e865cb22c8323bcdbeb"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/htmlwidget-sizing" data-for="htmlwidget-614d99b79c3483e305a1">{"viewer":{"width":"auto","height":"auto","padding":15,"fill":true},"browser":{"width":"auto","height":"auto","padding":40,"fill":false}}</script>
+
+
+</div>
+</div>
+</section>
+</section>
 </section>
 
 </main>
