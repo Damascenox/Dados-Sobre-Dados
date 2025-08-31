@@ -26,9 +26,3 @@ Alguns dos principais insights obtidos com a análise incluem:
 *   Cientistas de Dados com background em **Computação/TI** representam a maioria (cerca de 80%) e tendem a ter maior proporção em níveis de senioridade mais altos (Sênior) em comparação com aqueles com background em **Estatística/Matemática**, embora a distribuição salarial pareça similar entre os grupos de Plenos e Sêniores.
 *   A matriz de correlação revela relações positivas entre experiência, faixa salarial e o uso de certas ferramentas/linguagens.
 
-## How to Reproduce
-Para reproduzir esta análise, siga os passos abaixo:
-1. Clone este repositório.
-2. Certifique-se de que os arquivos de dados (`df2019.csv`, `df2021.csv`, `df2022.csv`, `df2023.csv`, `df2024.csv`) estão na pasta correta (ex: `/content/` se estiver usando Google Colab).
-3. Instale os pacotes R necessários: `tidyverse`, `janitor`, `reactable`, `stringr`, `corrplot`, `scales`, `knitr`, `plotly`, `tidytext`. Você pode instalar todos de uma vez no R com `install.packages(c("tidyverse","janitor", "reactable","stringr","corrplot", "scales","knitr","plotly", "tidytext"))`.
-4. Execute as células de código sequencialmente em um ambiente que suporte notebooks Jupyter com kernel R (como Google Colab ou RStudio).
