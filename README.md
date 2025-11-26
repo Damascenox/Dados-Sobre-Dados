@@ -1,4 +1,4 @@
-# Conectando Dados em Primeira Pessoa
+# Conectando Dados em Primeira Pessoa - HIATO
 
 ## Objetivo
 Este projeto é uma refatoração do código original do desafio "Dados em Primeira Pessoa" da comunidade Data Hackers. O objetivo principal é organizar e otimizar o código, melhorar a acessibilidade visual dos gráficos e aprofundar o entendimento das técnicas de análise de dados, utilizando os dados das pesquisas State of Data Brazil de 2019 e 2021 a 2024. A análise busca responder a perguntas frequentes da comunidade brasileira de dados com base em evidências empíricas.
